@@ -11,20 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('logs', function (Blueprint $table) {
+        Schema::create('objects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                  ->nullable()
-                  ->constrained()
-                  ->onDelete('set null');
-            $table->string('action');
-            $table->string('target_type')->nullable(); 
-            $table->unsignedBigInteger('target_id')->nullable(); 
-            $table->text('description')->nullable(); 
-            $table->string('ip_address', 45)->nullable();
-            $table->string('user_agent')->nullable();
-            $table->enum('level', ['info', 'warning', 'error'])->default('info');
-            $table->timestamp('logged_at')->useCurrent();
+            $table->foreignId('resource_id')->constrained('resources')->cascadeOnDelete();
+            
+            $table->string('key'); 
+            $table->float('size_mb');
+            $table->string('mime_type', 100); 
+            $table->string('storage_path'); 
+            
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

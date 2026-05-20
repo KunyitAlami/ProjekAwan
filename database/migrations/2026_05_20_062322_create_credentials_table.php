@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ssh_keys', function (Blueprint $table) {
+        Schema::create('credentials', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-                $table->string('name', 100);
-                $table->text('public_key');
-                $table->string('fingerprint');
-                $table->timestamp('created_at')->useCurrent();
+                $table->string('access_key', 100)->unique();
+                $table->string('secret_key');
+                $table->timestamps();
             });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ssh_keys');
+        Schema::dropIfExists('credentials');
     }
 };

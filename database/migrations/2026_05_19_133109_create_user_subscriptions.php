@@ -11,22 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resources', function (Blueprint $table) {
+        Schema::create('user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                  ->constrained()
-                  ->onDelete('cascade');
-            $table->foreignId('subscription_id')
-                  ->constrained('user_subscriptions')
-                  ->onDelete('cascade');
-            $table->enum('type', ['bucket', 'vm', 'storage', 'network'])
-                  ->default('bucket');
-            $table->string('name');
-            $table->string('ministack_id')->nullable(); 
-            $table->float('size_gb')->nullable();    
-            $table->json('config')->nullable();      
-            $table->enum('status', ['pending', 'active', 'stopped', 'deleted'])
-                  ->default('pending');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('package_id')->constrained('subscription_packages')->restrictOnDelete();
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->enum('status', ['active', 'expired', 'canceled'])->default('active');
             $table->timestamps();
         });
     }

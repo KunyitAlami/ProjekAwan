@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscription_packages', function (Blueprint $table) {
-                $table->id();
-                $table->string('name'); // Nama paket (Gold, Silver, Bronze)
-                $table->decimal('storage_quota_gb', 8, 2); // Kuota penyimpanan
-                $table->decimal('price_per_month', 12, 2); // Harga per bulan
-                $table->text('description')->nullable(); // Deskripsi paket
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('name', 100);
+            $table->float('quota_limit_gb');
+            $table->decimal('price_per_month', 10, 2);
+            $table->text('description')->nullable();
+        });
     }
 
     /**

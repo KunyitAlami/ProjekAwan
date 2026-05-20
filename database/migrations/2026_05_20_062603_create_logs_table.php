@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rental_logs', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subscription_id')->constrained('user_subscriptions')->onDelete('cascade');
-            $table->string('action'); // e.g., 'upload', 'download', 'delete'
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('action', 100);
+            $table->string('target_type', 50); // Contoh: 'resource', 'object', 'credential'
+            $table->unsignedBigInteger('target_id');
             $table->timestamp('logged_at')->useCurrent();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rental_logs');
+        Schema::dropIfExists('logs');
     }
 };

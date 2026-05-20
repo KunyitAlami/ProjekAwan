@@ -57,6 +57,6 @@ class User extends Authenticatable
     }
 
     public function credentials() {
-        return $this->hasOne(Credential::class); // Biasanya 1 user punya 1 set key
+        return $this->hasOne(Credential::class); 
     }
 }
