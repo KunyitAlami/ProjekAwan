@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('objects', function (Blueprint $table) {
                 $table->id();
-                
-                // Taktik paling aman: Samakan tipe data dengan resources->id secara otomatis
+        
                 $table->foreignId('resource_id')
-                    ->constrained('resources') // Merujuk ke nama tabel yang benar
-                    ->cascadeOnDelete();       // Ikut terhapus jika resource dihapus
+                    ->constrained('resources') 
+                    ->cascadeOnDelete();       
                     
                 $table->string('key');
                 $table->float('size_mb');

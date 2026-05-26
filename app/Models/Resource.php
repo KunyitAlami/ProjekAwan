@@ -9,29 +9,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Resource extends Model
 {
-    use SoftDeletes; // Mengaktifkan fitur deleted_at
+    use SoftDeletes;
 
-    protected $fillable = [
-        'user_id',
-        'subscription_id',
-        'name',
-        'type',
-        'status',
+    protected $guarded = ['id'];
+
+    protected $casts = [
+        'metadata' => 'array',
     ];
 
-    public function user(): BelongsTo
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function subscription(): BelongsTo
-    {
+    public function userSubscription() {
         return $this->belongsTo(UserSubscription::class);
     }
 
-    // Sumber daya ini menampung banyak file/object
-    public function objects(): HasMany
-    {
-        return $this->hasMany(ObjectFile::class, 'resource_id');
+    public function objects() {
+        return $this->hasMany(CloudObject::class); // Jika ini bucket
+    }
+
+    public function scopeVirtualMachines($query) {
+        return $query->where('type', 'virtual_machine');
+    }
+
+    public function scopeBuckets($query) {
+        return $query->where('type', 'bucket');
+    }
+
+    public function scopeRunning($query) {
+        return $query->where('status', 'running');
     }
 }

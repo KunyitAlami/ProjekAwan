@@ -8,26 +8,40 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserSubscription extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'package_id',
-        'start_date',
-        'end_date',
-        'status',
-    ];
+    protected $guarded = ['id'];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function package(): BelongsTo
-    {
+    public function package() {
         return $this->belongsTo(SubscriptionPackage::class, 'package_id');
     }
 
-    public function resources(): HasMany
+    public function resources() {
+        return $this->hasMany(Resource::class);
+    }
+
+    public function getUsedVcpuAttribute()
     {
-        return $this->hasMany(Resource::class, 'subscription_id');
+        return $this->resources()
+            ->virtualMachines()
+            ->running()
+            ->get()
+            ->sum(function ($resource) {
+                return $resource->metadata['vcpu'] ?? 0;
+            });
+    }
+
+    public function getRemainingVcpuAttribute()
+    {
+        return $this->package->vcpu_limit - $this->used_vcpu;
+    }
+
+    public function getUsedRamAttribute()
+    {
+        return $this->resources()
+            ->virtualMachines()
+            ->running()
+            ->get()
+            ->sum(function ($resource) {
+                return $resource->metadata['ram_mb'] ?? 0;
+            });
     }
 }
