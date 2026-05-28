@@ -24,4 +24,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected Routes (Authenticated Users Only)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/storage', [DashboardController::class, 'storage'])->name('dashboard.storage');
+    Route::get('/dashboard/subscription', [DashboardController::class, 'subscription'])->name('dashboard.subscription');
 });
