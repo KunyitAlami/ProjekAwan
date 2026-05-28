@@ -39,4 +39,24 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact('userData', 'subscriptionData', 'storageData', 'credentialsData'));
     }
+
+    public function storage()
+    {
+        // Data dummy khusus halaman storage
+        $storageData = [
+            'used' => 1.2,
+            'total' => 5,
+            'remaining' => 3.8,
+            'percentage' => 24,
+        ];
+
+        // Buat file storage.blade.php di dalam folder views/dashboard
+        return view('dashboard.storage', compact('storageData'));
+    }
+
+    public function subscription()
+    {
+        // data dummy khusus halaman langganan
+        return view('dashboard.subscription');
+    }
 }

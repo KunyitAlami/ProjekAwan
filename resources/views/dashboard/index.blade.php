@@ -1,54 +1,11 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard - MiniStack Cloud</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
-</head>
-<body id="dashboard" class="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-slate-50 font-sans">
-    <!-- Navbar -->
-    <nav class="bg-white dark:bg-slate-800 shadow-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                            <polyline points="13 2 13 9 20 9"></polyline>
-                        </svg>
-                        MiniStack Cloud
-                    </h1>
-                </div>
+@extends('layout.app')
 
-                <!-- Navigation Links -->
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="#dashboard" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Dashboard</a>
-                    <a href="#storage" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Storage</a>
-                    <a href="#subscription" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Subscription</a>
-                </div>
+@section('title', 'Dashboard - MiniStack Cloud')
 
-                <!-- User Menu -->
-                <div class="flex items-center gap-4">
-                    <span class="hidden sm:inline text-sm text-slate-600 dark:text-slate-400">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 text-sm">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+@section('content')
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Section -->
         <div class="mb-12">
             <h2 class="text-4xl font-bold mb-2">Welcome, {{ auth()->user()->name }}!</h2>
@@ -111,9 +68,9 @@
                         <p class="text-sm font-semibold">{{ $subscriptionData['price'] }}</p>
                     </div>
                 </div>
-                <button class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-200">
+                <a href="{{ route('dashboard.subscription') }}" class="mt-4 block text-center w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-200">
                     Upgrade Plan
-                </button>
+                </a>
             </div>
 
             <!-- Storage Quota Card -->
@@ -137,9 +94,9 @@
                         <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">{{ $storageData['remaining'] }} GB remaining of {{ $storageData['total'] }} GB</p>
                     </div>
                 </div>
-                <button class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 rounded-lg transition duration-200">
+                <a href="{{ route('dashboard.storage') }}" class="mt-4 w-full block text-center bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 rounded-lg transition duration-200">
                     View Storage
-                </button>
+                </a>
             </div>
         </div>
 
@@ -207,7 +164,7 @@
 
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="#storage" class="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition duration-300 group cursor-pointer">
+            <a href="{{ route('dashboard.storage') }}" class="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition duration-300 group cursor-pointer">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="font-bold text-lg">View Storage</h4>
                     <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,7 +174,7 @@
                 <p class="text-sm text-slate-600 dark:text-slate-400">Manage and monitor your storage usage</p>
             </a>
 
-            <a href="#subscription" class="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition duration-300 group cursor-pointer">
+            <a href="{{ route('dashboard.subscription') }}" class="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition duration-300 group cursor-pointer">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="font-bold text-lg">Choose Subscription</h4>
                     <svg class="w-5 h-5 text-slate-400 group-hover:text-purple-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +195,9 @@
             </a>
         </div>
     </div>
+    @endsection
 
+    @push('scripts')
     <script>
         let secretKeyVisible = false;
         const secretKey = '{{ $credentialsData["secretKey"] }}';
@@ -278,5 +237,5 @@
             });
         }
     </script>
-</body>
+    @endpush
 </html>

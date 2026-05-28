@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('subscription_packages', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->float('quota_limit_gb');
+            // $table->float('quota_limit_gb');
+            $table->float('storage_quota_gb');
             $table->decimal('price_per_month', 10, 2);
             $table->text('description')->nullable();
         });
