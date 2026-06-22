@@ -30,6 +30,9 @@
                     <a href="{{ route('dashboard.storage') }}" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Storage</a>
                     <a href="{{ route('dashboard.resources') }}" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Resources</a>
                     <a href="{{ route('dashboard.subscription') }}" class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">Subscription</a>
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition">Admin</a>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-4">
