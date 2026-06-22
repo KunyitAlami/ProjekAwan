@@ -113,4 +113,17 @@ class ResourceRepository
             [$id]
         ) > 0;
     }
+
+    /**
+     * Ambil semua resource beserta username pemiliknya dengan pagination.
+     */
+    public static function getAllResourcesWithUser(int $perPage = 10)
+    {
+        return DB::table('resources as r')
+            ->select('r.*', 'u.username as user_name')
+            ->join('users as u', 'r.user_id', '=', 'u.id')
+            ->whereNull('r.deleted_at')
+            ->orderBy('r.created_at', 'desc')
+            ->paginate($perPage, ['*'], 'resources_page');
+    }
 }

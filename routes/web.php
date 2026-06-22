@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +46,11 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/dashboard/resources/{id}', [ResourceController::class, 'show'])->name('dashboard.resources.show');
     Route::post('/dashboard/resources/{id}/start', [ResourceController::class, 'start'])->name('dashboard.resources.start');
     Route::post('/dashboard/resources/{id}/stop', [ResourceController::class, 'stop'])->name('dashboard.resources.stop');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'active', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 });
 
 // Midtrans Webhook (no CSRF, no auth)

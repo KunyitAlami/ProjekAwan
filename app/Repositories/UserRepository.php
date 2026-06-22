@@ -49,4 +49,20 @@ class UserRepository
 
         return $user && $user->role === 'admin';
     }
+
+    /**
+     * Ambil semua user beserta paket langganan aktifnya dengan pagination.
+     */
+    public static function getAllUsersWithStorage(int $perPage = 10)
+    {
+        return DB::table('users as u')
+            ->select('u.*', 'p.name as package_name')
+            ->leftJoin('user_subscriptions as us', function ($join) {
+                $join->on('u.id', '=', 'us.user_id')
+                     ->where('us.status', '=', 'active');
+            })
+            ->leftJoin('subscription_packages as p', 'p.id', '=', 'us.package_id')
+            ->orderBy('u.created_at', 'desc')
+            ->paginate($perPage, ['*'], 'users_page');
+    }
 }
