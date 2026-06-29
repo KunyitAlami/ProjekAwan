@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StorageAuthController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -24,16 +25,38 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes (Authenticated + Active Users Only)
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/storage/connect',
+        [StorageAuthController::class, 'show'])
+        ->name('storage.login');
 
-    // Storage
-    Route::get('/dashboard/storage', [DashboardController::class, 'storage'])->name('dashboard.storage');
-    Route::post('/dashboard/storage/buckets', [DashboardController::class, 'storeBucket'])->name('dashboard.storage.buckets.store');
-    Route::post('/dashboard/storage/upload', [DashboardController::class, 'uploadObject'])->name('dashboard.storage.upload');
-    Route::delete('/dashboard/storage/delete/{id}', [DashboardController::class, 'deleteObject'])->name('dashboard.storage.objects.delete');
-    Route::get('/dashboard/storage/download/{id}', [DashboardController::class, 'downloadObject'])->name('dashboard.storage.objects.download');
+    Route::post('/storage/connect',
+        [StorageAuthController::class, 'authenticate'])
+        ->name('storage.authenticate');
+
+    Route::middleware(['auth', 'storage.auth'])->group(function () {
+
+        // Storage
+        Route::get('/dashboard/storage', [DashboardController::class, 'storage'])
+            ->name('dashboard.storage');
+
+        Route::post('/dashboard/storage/buckets', [DashboardController::class, 'storeBucket'])
+            ->name('dashboard.storage.buckets.store');
+
+        Route::post('/dashboard/storage/upload', [DashboardController::class, 'uploadObject'])
+            ->name('dashboard.storage.upload');
+
+        Route::delete('/dashboard/storage/delete/{id}', [DashboardController::class, 'deleteObject'])
+            ->name('dashboard.storage.objects.delete');
+
+        Route::get('/dashboard/storage/download/{id}', [DashboardController::class, 'downloadObject'])
+            ->name('dashboard.storage.objects.download');
+
+    });
+
+    
     
     // Subscription
     Route::get('/dashboard/subscription', [DashboardController::class, 'subscription'])->name('dashboard.subscription');

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\BucketRepository;
+use App\Repositories\LogRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ResourceRepository;
 use App\Repositories\SubscriptionPackageRepository;
@@ -76,6 +77,13 @@ class StorageService
         try {
             $s3Client = Storage::disk('s3')->getClient();
             $s3Client->createBucket(['Bucket' => $bucketName]);
+            LogRepository::create([
+                'user_id' => $userId,
+                'action' => 'CREATE_BUCKET',
+                'target_type' => 'bucket',
+                'target_id' => $bucketId,
+                'description' => 'Membuat bucket ' . $bucketName,
+            ]);
         } catch (\Exception $e) {
             // Rollback: hapus record yang sudah dibuat
             ResourceRepository::softDelete($resourceId);
@@ -124,6 +132,19 @@ class StorageService
             'size_mb' => $sizeMb,
             'mime_type' => $file->getClientMimeType(),
             'storage_path' => $targetPath,
+        ]);
+
+        LogRepository::create([
+            'user_id' => $userId,
+            'action' => 'UPLOAD_OBJECT',
+            'target_type' => 'object',
+            'target_id' => $objectId,
+            'description' =>
+                'Mengupload file "' .
+                $file->getClientOriginalName() .
+                '" ke bucket "' .
+                $bucket->bucket_name .
+                '"',
         ]);
 
         // Update stats bucket

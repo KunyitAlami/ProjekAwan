@@ -198,6 +198,46 @@
         </div>
     </div>
 </div>
+
+<div class="mt-20 ml-96 mr-96">
+    <h2 class="text-2xl font-bold mb-4">
+        Recent Activity
+    </h2>
+
+    <div class="bg-white rounded-xl shadow border">
+
+        @forelse($logs as $log)
+
+            <div class="p-4 border-b">
+
+                <div class="flex justify-between">
+
+                    <span class="font-semibold text-blue-600">
+                        {{ $log->action }}
+                    </span>
+
+                    <span class="text-sm text-gray-500">
+                        {{ \Carbon\Carbon::parse($log->logged_at)->format('d M Y H:i:s') }}
+                    </span>
+
+                </div>
+
+                <p class="text-gray-600 mt-1">
+                    {{ $log->description }}
+                </p>
+
+            </div>
+
+        @empty
+
+            <div class="p-6 text-center text-gray-500">
+                Belum ada aktivitas.
+            </div>
+
+        @endforelse
+
+    </div>
+</div>
 @endsection
 
 @push('scripts')

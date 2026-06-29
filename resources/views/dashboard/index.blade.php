@@ -230,21 +230,35 @@
         }
 
         function copyToClipboard(text, type) {
-            navigator.clipboard.writeText(text).then(() => {
+
+            // fallback untuk HTTP
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+
+            document.body.appendChild(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+
                 const button = document.getElementById(type + '-btn');
                 const originalText = button.textContent;
+
                 button.textContent = 'Copied!';
                 button.parentElement.classList.add('bg-green-600');
-                button.parentElement.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                button.parentElement.classList.remove('bg-blue-600');
 
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.parentElement.classList.remove('bg-green-600');
-                    button.parentElement.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    button.parentElement.classList.add('bg-blue-600');
                 }, 2000);
-            }).catch(err => {
+
+            } catch (err) {
                 alert('Failed to copy to clipboard');
-            });
+            }
+
+            document.body.removeChild(textArea);
         }
     </script>
     @endpush

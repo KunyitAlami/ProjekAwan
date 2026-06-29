@@ -18,8 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'storage.auth' => \App\Http\Middleware\StorageAuthenticated::class,
         ]);
     })
+    // ->withMiddleware(function ($middleware) {
+    //     $middleware->alias([
+    //         'storage.auth' => \App\Http\Middleware\StorageAuthenticated::class,
+    //     ]);
+    // })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

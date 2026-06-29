@@ -6,6 +6,8 @@ use App\Repositories\BucketRepository;
 use App\Repositories\CredentialRepository;
 use App\Repositories\SubscriptionOrderRepository;
 use App\Repositories\SubscriptionPackageRepository;
+use App\Repositories\ObjectRepository;
+use App\Repositories\LogRepository;
 use App\Repositories\UserSubscriptionRepository;
 use App\Services\StorageService;
 use App\Services\SubscriptionService;
@@ -68,16 +70,36 @@ class DashboardController extends Controller
     public function storage()
     {
         $user = Auth::user();
-        $activeSub = $this->userSetupService->ensureUserIsReady($user->id);
-        $package = SubscriptionPackageRepository::findById($activeSub->package_id);
 
-        $storageData = $this->storageService->getStorageOverview($user->id, $package);
-        $storageData['buckets_count'] = BucketRepository::countByUserId($user->id);
+        $activeSub = $this->userSetupService
+            ->ensureUserIsReady($user->id);
 
-        $buckets = $this->storageService->getBucketsWithObjects($user->id);
+        $package = SubscriptionPackageRepository::findById(
+            $activeSub->package_id
+        );
+
+        $storageData = $this->storageService
+            ->getStorageOverview($user->id, $package);
+
+        $storageData['buckets_count'] =
+            BucketRepository::countByUserId($user->id);
+
+        $buckets = $this->storageService
+            ->getBucketsWithObjects($user->id);
+
         $credentials = CredentialRepository::findByUserId($user->id);
 
-        return view('dashboard.storage', compact('storageData', 'buckets', 'credentials'));
+        $logs = LogRepository::getByUserId($user->id, 10);
+
+        return view(
+            'dashboard.storage',
+            compact(
+                'storageData',
+                'buckets',
+                'credentials',
+                'logs'
+            )
+        );
     }
 
     /**
@@ -218,42 +240,67 @@ class DashboardController extends Controller
     /**
      * Hapus file dari bucket.
      */
-    public function deleteObject(Request $request)
+    public function deleteObject(int $id)
     {
-        $request->validate([
-            'object_id' => 'required|integer',
-        ]);
-
         try {
+            $object = ObjectRepository::findById($id);
+
+            if (! $object) {
+                throw new RuntimeException('File tidak ditemukan.');
+            }
+
+            LogRepository::create([
+                'user_id' => Auth::id(),
+                'action' => 'DELETE_OBJECT',
+                'target_type' => 'object',
+                'target_id' => $object->id,
+                'description' => 'Menghapus file "' . $object->original_filename . '"',
+            ]);
+
             $this->storageService->deleteObject(
                 Auth::id(),
-                (int) $request->input('object_id')
+                $id
             );
 
-            return redirect()->back()->with('success', 'File berhasil dihapus dari MiniStack Cloud Emulator!');
+            return back()->with(
+                'success',
+                'File berhasil dihapus.'
+            );
         } catch (RuntimeException $e) {
-            return redirect()->back()->withErrors(['object_id' => $e->getMessage()]);
+            return back()->withErrors([
+                'object' => $e->getMessage()
+            ]);
         }
     }
 
     /**
      * Download file dari bucket.
      */
-    public function downloadObject(Request $request)
+    public function downloadObject(int $id)
     {
-        $request->validate([
-            'object_id' => 'required|integer',
-        ]);
-
         try {
-            $this->storageService->downloadObject(
-                Auth::id(),
-                (int) $request->input('object_id')
-            );
+            $object = ObjectRepository::findById($id);
 
-            return redirect()->back()->with('success', 'File berhasil diunduh dari MiniStack Cloud Emulator!');
+            if (! $object) {
+                throw new RuntimeException('File tidak ditemukan.');
+            }
+
+            LogRepository::create([
+                'user_id' => Auth::id(),
+                'action' => 'DOWNLOAD_OBJECT',
+                'target_type' => 'object',
+                'target_id' => $object->id,
+                'description' => 'Mengunduh file "' . $object->original_filename . '"',
+            ]);
+
+            return $this->storageService->downloadObject(
+                Auth::id(),
+                $id
+            );
         } catch (RuntimeException $e) {
-            return redirect()->back()->withErrors(['object_id' => $e->getMessage()]);
+            return back()->withErrors([
+                'object' => $e->getMessage()
+            ]);
         }
     }
 }
